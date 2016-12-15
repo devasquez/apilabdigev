@@ -1,0 +1,19 @@
+{
+  "name": "broadband",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Espacio Node JS devasquez",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dany Vasquez",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "hapi": "^15.1.1",
+    "joi": "^9.0.4",
+    "cassandra-driver":"*"
+  }
+}
