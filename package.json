@@ -15,5 +15,14 @@
     "hapi": "^15.1.1",
     "joi": "^9.0.4",
     "cassandra-driver":"*"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^2.0.1",
+    "mocha": "^2.4.5",
+    "mocha-junit-reporter": "^1.12.1"
+  },
+  "scripts": {
+    "test": "mocha test/ "
   }
 }
