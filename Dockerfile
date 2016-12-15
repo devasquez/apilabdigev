@@ -7,11 +7,11 @@ FROM erickeliseo/centosfornodejs:latest
 
 #Descargamos los fuentes de la aplicacion
 WORKDIR /tmp
-RUN wget https://github.com/erickeliseo/broadband-de/archive/master.zip && \
+RUN wget https://github.com/devasquez/apilabdigev/archive/master.zip && \
     unzip master.zip && \
-    cd /tmp/broadband-de-master/ && \
+    cd /tmp/apilabdigev-master/ && \
     mkdir -p /usr/src/app && \
-    cp -r /tmp/broadband-de-master/* /usr/src/app/
+    cp -r /tmp/apilabdigev-master/* /usr/src/app/
 
 #Instalamos las dependencias
 WORKDIR /usr/src/app
