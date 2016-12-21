@@ -54,8 +54,7 @@ serviceController.getConsumptionDetailsForMSISDN = {
         var d = new Date();
         
         if (req.query.end_date < req.query.start_date){
-            
-            return reply('Invalid date query').code(404); 
+            return reply('{"error":{"code": 400, "message": "Invalid date query!"}}').header('Content-Type', 'application/json');
             
         }
         
@@ -144,16 +143,17 @@ serviceController.getConsumptionDetailsForMSISDN = {
                         d = null;
                       
                       //Callback de función de consulta
-                        return reply(dataSummary);   
+                        return reply(dataSummary).header('Content-Type', 'application/json');   
                                   
                   }
                   else
                       {
-                          return reply('No data found for msisdn : '+req.params.msisdn).code(404);
+                          return reply('{"error":{"code": 400, "message": "No data found for msisdn!"}}').header('Content-Type', 'application/json');
                       }            
             } 
             else {
-                return reply('Could not perform query').code(404);
+				return reply('{"error":{"code": 400, "message": "Could not perform query!"}}').header('Content-Type', 'application/json');
+
             }
                   
                               
@@ -184,11 +184,11 @@ serviceController.getPromotionsByMsisdn = {
             client_cas.execute(cquery, function (err, result) {
 
               if (typeof result === 'undefined')
-                return reply('No data found for msisdn (undefined) : '+req.params.msisdn).code(404);
+					return reply('{"error":{"code": 400, "message": "No data found for msisdn (undefined)"}}').header('Content-Type', 'application/json');
               else {
 
                   if (result.rows.length === 0)
-                      return reply('No data found for msisdn : '+req.params.msisdn).code(404);
+						return reply('{"error":{"code": 400, "message": "No data found for msisdn "}}').header('Content-Type', 'application/json');
                   else
                   {
 
@@ -205,7 +205,7 @@ serviceController.getPromotionsByMsisdn = {
 
                     DetallePromotions=DetallePromotions.slice(0, - 1)+']}';
 
-                    return reply(DetallePromotions);
+                    return reply(DetallePromotions).header('Content-Type', 'application/json');
                   }
               }
 
@@ -223,22 +223,25 @@ serviceController.getPromotionsByMsisdn = {
 
 serviceController.getPromotionsByMsisdnPromo = {
     handler: function(req, reply) {
-
+				if (Number(req.params.idpromo) < 0) {
+					return reply('{"error":{"code": 400, "message": "El parámetro IdPromo no puede ser negativo."}}').header('Content-Type', 'application/json');
+				}
 			cquery = "select * from whitelist.whitelist_by_promo where msisdn = '"+req.params.msisdn + "' and promo = "+ req.params.idpromo + " ALLOW FILTERING";
             client_cas.execute(cquery, function (err, result) {
 			
 			DetallePromotionsNotFound='{"promotions" : [{ '
 						+ '"msisdn" : "'+ req.params.msisdn + '", '						
 						+ '"promoid" : "'+ req.params.idpromo + '", '
-						+ '"result" : "false"}]}';
+						+ '"result" : "false"}],'
+						+ '"code" : 400, '
+						+ '"message" : "No existen promociones para la consulta realizada"}';
 						
               if (typeof result === 'undefined')
-
-                return reply('Could not perform query.').code(404);
+					return reply('{"error":{"code": 400, "message": "Could not perform query."}}').header('Content-Type', 'application/json');
               else {
 
                   if (result.rows.length === 0)
-                      return reply(DetallePromotionsNotFound).code(404);
+                      return reply(DetallePromotionsNotFound).header('Content-Type', 'application/json');
                   else
                   {
 
@@ -258,7 +261,7 @@ serviceController.getPromotionsByMsisdnPromo = {
 
                     DetallePromotions=DetallePromotions.slice(0, - 1)+']}';
 
-                    return reply(DetallePromotions);
+                    return reply(DetallePromotions).header('Content-Type', 'application/json');
                   }
               }
 
@@ -267,7 +270,7 @@ serviceController.getPromotionsByMsisdnPromo = {
     validate: {
         params: {
             msisdn: Joi.number().integer().min(50200000000).max(50299999999).required(),
-			idpromo: Joi.number().integer().required()
+			idpromo: Joi.number().integer().min(1).max(99999999).required()
         }
     }
 };
@@ -284,8 +287,8 @@ module.exports = [
       config: serviceController.getPromotionsByMsisdn
     },
     {
-      path: '/v1/tigo/mobile/gt/subscribers/{msisdn}/promotions/{idpromo}',
+      path: '/v1/tigo/mobile/gt/subscribers/{msisdn}/promotions/{idpromo*}',
       method: 'GET',
-      config: serviceController.getPromotionsByMsisdnPromo
+	  config: serviceController.getPromotionsByMsisdnPromo
     }
 ];
